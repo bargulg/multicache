@@ -30,7 +30,7 @@ class APICache(object):
 
 class DummyCache(APICache):
     """ Fake cache class to allow a "no cache"
-        use without anything """
+        use without breaking anything """
     def __init__(self):
         self._dict = {}
 
@@ -87,6 +87,8 @@ class DictCache(APICache):
 
 
 class FileCache(APICache):
+    """ Saves data to a dictionary and files, always saves to both,
+    only reads files when data isn't in dictionary"""
     def __init__(self, path=None, **kwargs):
         self._cache = {}
         self.ex = kwargs.pop('ex', 3600)
