@@ -6,6 +6,10 @@ import hashlib
 import pickle
 import tempfile
 
+from threading import Lock
+
+lock = Lock()
+
 
 class APICache(object):
     """
@@ -64,12 +68,13 @@ class DictCache(APICache):
             return None
 
     def put(self, key, value, ex=None, ttl=None):
-        if ex is None:
-            if ttl is not None:
-                ex = ttl + time()
-            else:
-                ex = self.ex
-        self._dict[key] = value, ex + time()
+        with lock:
+            if ex is None:
+                if ttl is not None:
+                    ex = ttl + time()
+                else:
+                    ex = self.ex
+            self._dict[key] = value, ex + time()
 
     def invalidate(self, key):
         self._dict.pop(key, None)
@@ -105,11 +110,12 @@ class FileCache(APICache):
         return os.path.join(self.path, h.hexdigest() + '.cache')
 
     def put(self, key, value, ex=None, ttl=None):
-        with open(self._getpath(key), 'wb') as f:
-            if ex is None:
-                ex = self.ex
-            f.write(zlib.compress(pickle.dumps((value, ex + time()), -1)))
-        self._cache[key] = value
+        with lock:
+            with open(self._getpath(key), 'wb') as f:
+                if ex is None:
+                    ex = self.ex
+                f.write(zlib.compress(pickle.dumps((value, ex + time()), -1)))
+            self._cache[key] = value
 
     def get(self, key):
         if key in self._cache:
@@ -133,12 +139,13 @@ class FileCache(APICache):
                 raise
 
     def invalidate(self, key):
-        self._cache.pop(key, None)
+        with lock:
+            self._cache.pop(key, None)
 
-        try:
-            os.unlink(self._getpath(key))
-        except OSError as ex:
-            if ex.errno == 2:  # does not exist
-                pass
-            else:
-                raise
+            try:
+                os.unlink(self._getpath(key))
+            except OSError as ex:
+                if ex.errno == 2:  # does not exist
+                    pass
+                else:
+                    raise
