@@ -40,5 +40,5 @@ For speed, it also saves it in dict, and reads file whenever it doesn't find key
 ### DummyCache
 Doesn't save anything, every call to get(key) is a cache miss 
 
-### Your own custom, fance cache
+### Your own custom, fancy cache
 Just inherit from APICache and implement put(), get(), and invalidate()
