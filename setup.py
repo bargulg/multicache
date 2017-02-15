@@ -5,7 +5,7 @@ from distutils.core import setup
 setup(
     name='multicache',
     packages=['multicache'],
-    version='0.1.3',
+    version='0.1.4',
     description='Simple caching mechanisms',
     author='Michal Ovciarik',
     author_email='movciari@gmail.com',
