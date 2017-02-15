@@ -5,8 +5,9 @@ python:
   - "3.6"
   - "3.7-dev" # 3.7 development branch
 # command to install dependencies
-install: "pip install pytest coveralls python-coveralls"
+install: "pip install pytest python-coveralls"
 # command to run tests
-script: coverage run --branch py.test tests/
+script: py.test tests/
+script: coverage run --branch `which py.test` tests/
 after_success:
     - coveralls
