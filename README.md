@@ -1,4 +1,7 @@
 # Multicache
+
+[![Build Status](https://travis-ci.org/bargulg/multicache.svg?branch=master)](https://travis-ci.org/bargulg/multicache)
+
 Simple python caching mechanisms using expiration time or time to live.
 
 Designed to be used with API clients and similar.
