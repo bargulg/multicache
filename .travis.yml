@@ -11,3 +11,5 @@ python:
 install: "pip install pytest"
 # command to run tests
 script: py.test tests/
+after_success:
+    - coveralls
