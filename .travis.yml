@@ -8,7 +8,7 @@ python:
   - "3.7-dev" # 3.7 development branch
   - "nightly" # currently points to 3.7-dev
 # command to install dependencies
-install: "pip install pytest"
+install: "pip install pytest coveralls"
 # command to run tests
 script: py.test tests/
 after_success:

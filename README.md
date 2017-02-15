@@ -1,6 +1,7 @@
 # Multicache
 
 [![Build Status](https://travis-ci.org/bargulg/multicache.svg?branch=master)](https://travis-ci.org/bargulg/multicache)
+[![Coverage Status](https://coveralls.io/repos/github/bargulg/multicache/badge.svg?branch=master)](https://coveralls.io/github/bargulg/multicache?branch=master)
 
 Simple python caching mechanisms using expiration time or time to live.
 
