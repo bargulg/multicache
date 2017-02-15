@@ -52,7 +52,7 @@ class DictCache(BaseCache):
     """ Saves data in a dictionary without any persistent storage """
     def __init__(self, **kwargs):
         self._dict = {}
-        self.ex = kwargs.pop('ex', 3600)
+        self.ttl = kwargs.pop('ttl', 3600)
 
     def get(self, key):
         ret = self._dict.get(key, None)
@@ -73,8 +73,8 @@ class DictCache(BaseCache):
                 if ttl is not None:
                     ex = ttl + time()
                 else:
-                    ex = self.ex
-            self._dict[key] = value, ex + time()
+                    ex = self.ttl + time()
+            self._dict[key] = value, ex
 
     def invalidate(self, key):
         self._dict.pop(key, None)
@@ -86,9 +86,12 @@ class DictCache(BaseCache):
         return [val[0] for val in self._dict.values() if val[1] >= time()]
 
     def recheck(self):
+        invalid = []
         for key, val in self._dict.items():
             if time() > val[1]:
-                self.invalidate(key)
+                invalid.append(key)
+        for key in invalid:
+            self.invalidate(key)
 
 
 class FileCache(BaseCache):
@@ -96,7 +99,7 @@ class FileCache(BaseCache):
     only reads files when data isn't in dictionary"""
     def __init__(self, path=None, **kwargs):
         self._cache = {}
-        self.ex = kwargs.pop('ex', 3600)
+        self.ttl = kwargs.pop('ttl', 3600)
         if path:
             self.path = path
         else:
@@ -113,13 +116,18 @@ class FileCache(BaseCache):
         with lock:
             with open(self._getpath(key), 'wb') as f:
                 if ex is None:
-                    ex = self.ex
-                f.write(zlib.compress(pickle.dumps((value, ex + time()), -1)))
-            self._cache[key] = value
+                    if ttl is not None:
+                        ex = ttl + time()
+                    else:
+                        ex = self.ttl + time()
+                f.write(zlib.compress(pickle.dumps((value, ex), -1)))
+            self._cache[key] = (value, ex)
 
     def get(self, key):
         if key in self._cache:
-            return self._cache[key]
+            cached = self._cache[key]
+            if cached[1] > time():
+                return cached[0]
 
         try:
             with open(self._getpath(key), 'rb') as f:

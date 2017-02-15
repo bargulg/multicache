@@ -1,3 +1,5 @@
+from time import sleep, time
+
 from multicache import DictCache, FileCache, DummyCache
 import pytest
 import string
@@ -16,31 +18,26 @@ def random_value():
 
 @pytest.fixture(scope='function')
 def random_path():
-    return ''.join([random.choice(string.ascii_lowercase) for _ in range(8)])
+    return '.' +\
+           ''.join([random.choice(string.ascii_lowercase) for _ in range(8)])
 
 
 @pytest.fixture(scope='function', params=[DictCache, FileCache])
 def cache(request):
-    return request.param()
+    return request.param(ttl=2)
 
 
-def test_empty_cache(cache, random_key):
+def test_crud(cache, random_key, random_value):
     assert cache.get(random_key) is None
-
-
-def test_cache(cache, random_key, random_value):
+    cache.invalidate(random_key)
     cache.put(random_key, random_value)
     assert cache.get(random_key) == random_value
-
-
-def test_invalidate(cache, random_key, random_value):
-    cache.put(random_key, random_value)
+    cache.put(random_key + '_', random_value + '_')
+    assert cache.get(random_key + '_') == random_value + '_'
+    cache.put(random_key, random_value + '_')
+    assert cache.get(random_key) == random_value + '_'
     cache.invalidate(random_key)
     assert cache.get(random_key) is None
-
-
-def test_invalidate_nonexistent(cache, random_key):
-    cache.invalidate(random_key)
 
 
 def test_dummy_cache(random_key, random_value):
@@ -74,3 +71,29 @@ def test_listable_cache(random_key, random_value):
     assert random_key + '3' in cache.get_all_keys()
     assert random_value + '3' in cache.get_all_values()
     cache.recheck()
+
+
+def test_recheck_expired(random_key, random_value):
+    cache = DictCache(ttl=2)
+    for i in range(5):
+        cache.put(random_key + str(i), random_value + str(i))
+    sleep(3)
+    cache.recheck()
+    assert cache.get(random_key + '2') is None
+
+
+def test_expiration(cache, random_key, random_value):
+    cache.put(random_key, random_value)
+    assert cache.get(random_key) == random_value
+    sleep(3)
+    assert cache.get(random_key) is None
+    cache.put(random_key, random_value, ttl=5)
+    sleep(3)
+    assert cache.get(random_key) == random_value
+    sleep(3)
+    assert cache.get(random_key) is None
+    cache.put(random_key, random_value, ex=time() + 5)
+    sleep(3)
+    assert cache.get(random_key) == random_value
+    sleep(3)
+    assert cache.get(random_key) is None
