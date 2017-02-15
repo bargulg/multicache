@@ -41,4 +41,4 @@ For speed, it also saves it in dict, and reads file whenever it doesn't find key
 Doesn't save anything, every call to get(key) is a cache miss 
 
 ### Your own custom, fancy cache
-Just inherit from APICache and implement put(), get(), and invalidate()
+Just inherit from BaseCache and implement put(), get(), and invalidate()

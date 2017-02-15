@@ -11,7 +11,7 @@ from threading import Lock
 lock = Lock()
 
 
-class APICache(object):
+class BaseCache(object):
     """
     Every cache should be a subclass of this class
     """
@@ -32,7 +32,7 @@ class APICache(object):
         raise NotImplementedError
 
 
-class DummyCache(APICache):
+class DummyCache(BaseCache):
     """ Fake cache class to allow a "no cache"
         use without breaking anything """
     def __init__(self):
@@ -48,7 +48,7 @@ class DummyCache(APICache):
         pass
 
 
-class DictCache(APICache):
+class DictCache(BaseCache):
     """ Saves data in a dictionary without any persistent storage """
     def __init__(self, **kwargs):
         self._dict = {}
@@ -83,15 +83,15 @@ class DictCache(APICache):
         return self._dict.keys()
 
     def get_all_values(self):
-        return self._dict.values()
+        return [val[0] for val in self._dict.values() if val[1] >= time()]
 
     def recheck(self):
         for key, val in self._dict.items():
-            if time() > val(1):
+            if time() > val[1]:
                 self.invalidate(key)
 
 
-class FileCache(APICache):
+class FileCache(BaseCache):
     """ Saves data to a dictionary and files, always saves to both,
     only reads files when data isn't in dictionary"""
     def __init__(self, path=None, **kwargs):
@@ -100,7 +100,7 @@ class FileCache(APICache):
         if path:
             self.path = path
         else:
-            self.path = '{}/mtgsdk'.format(tempfile.gettempdir())
+            self.path = '{}/multicache'.format(tempfile.gettempdir())
         if not os.path.isdir(self.path):
             os.mkdir(self.path, 0o700)
 
