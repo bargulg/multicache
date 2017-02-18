@@ -1,6 +1,6 @@
 from time import sleep, time
 
-from multicache import DictCache, FileCache, DummyCache
+from multicache import DictCache, FileCache, DummyCache, BaseCache
 import pytest
 import string
 import random
@@ -97,3 +97,21 @@ def test_expiration(cache, random_key, random_value):
     assert cache.get(random_key) == random_value
     sleep(3)
     assert cache.get(random_key) is None
+
+
+def test_base_cache():
+    # this is the only test that's there just for coverage
+    # no other way to test BaseCache is needed
+    cache = BaseCache()
+    try:
+        cache.get(None)
+    except NotImplementedError:
+        pass
+    try:
+        cache.put(None, None)
+    except NotImplementedError:
+        pass
+    try:
+        cache.invalidate(None)
+    except NotImplementedError:
+        pass
