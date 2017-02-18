@@ -3,7 +3,10 @@
 from distutils.core import setup
 
 tests_require = [
-    'pytest'
+    'pytest',
+    'pytest-pep8',
+    'pytest-cov'
+    'coveralls'
 ]
 
 setup(
