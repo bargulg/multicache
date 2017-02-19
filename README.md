@@ -10,6 +10,20 @@ Designed to be used with API clients and similar.
 This module aims primarily to be simple and easy to use and extend.
 It doesn't remove expired data unless you try to get it from cache.
 
+## Installation
+
+    pip install multicache
+
+or
+
+    git clone git@github.com:bargulg/multicache.git
+    cd multicache
+    python setup.py install
+
+optionally for redis cache:
+
+    pip install redis
+
 ## Usage
     
     from multicache import DictCache
@@ -33,6 +47,11 @@ It doesn't remove expired data unless you try to get it from cache.
             return response
 
 ## Types of cache
+
+### RedisCache   (recommended)
+Saves data in redis - fast, lightweight and reliable
+Right now this supports only default redis settings, better support for redis
+will come soon
 
 ### DictCache
 Saves data in dict - this will be deleted when program is closed

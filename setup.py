@@ -12,7 +12,7 @@ tests_require = [
 setup(
     name='multicache',
     packages=['multicache'],
-    version='0.1.6',
+    version='0.1.7',
     description='Simple caching mechanisms',
     author='Michal Ovciarik',
     author_email='movciari@gmail.com',
