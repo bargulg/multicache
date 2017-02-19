@@ -140,5 +140,3 @@ class FileCache(BaseCache):
                     pass
                 else:
                     raise
-
-
