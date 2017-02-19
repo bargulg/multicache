@@ -28,7 +28,8 @@ class RedisCache(BaseCache):
                 ttl = self.ttl
         redis_key = pickle.dumps(key)
         redis_value = pickle.dumps(value)
-        self.redis.set("{}:{}".format(self.name, redis_key), redis_value, ttl)
+        self.redis.set(
+            "{}:{}".format(self.name, redis_key), redis_value, int(ttl))
 
     def invalidate(self, key):
         self.redis.delete("{}:{}".format(self.name, pickle.dumps(key)))

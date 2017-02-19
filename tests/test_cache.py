@@ -92,7 +92,7 @@ def test_expiration(cache, random_key, random_value):
     assert cache.get(random_key) == random_value
     sleep(3)
     assert cache.get(random_key) is None
-    cache.put(random_key, random_value, ex=int(time() + 5))
+    cache.put(random_key, random_value, ex=time() + 5)
     sleep(3)
     assert cache.get(random_key) == random_value
     sleep(3)
