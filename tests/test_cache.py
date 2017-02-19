@@ -1,6 +1,6 @@
 from time import sleep, time
 
-from multicache import DictCache, FileCache, DummyCache, BaseCache
+from multicache import DictCache, FileCache, DummyCache, BaseCache, RedisCache
 import pytest
 import string
 import random
@@ -22,7 +22,7 @@ def random_path():
            ''.join([random.choice(string.ascii_lowercase) for _ in range(8)])
 
 
-@pytest.fixture(scope='function', params=[DictCache, FileCache])
+@pytest.fixture(scope='function', params=[DictCache, FileCache, RedisCache])
 def cache(request):
     return request.param(ttl=2)
 

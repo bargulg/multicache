@@ -5,9 +5,11 @@ python:
   - "3.6"
   - "3.7-dev" # 3.7 development branch
 # command to install dependencies
+services:
+  - redis-server
 install: "pip install -r test_requirements.txt"
 # command to run tests
 script:
-    - py.test tests --doctest-modules --pep8 multicache -v --cov multicache --cov-report term-missing
+  - py.test tests --doctest-modules --pep8 multicache -v --cov multicache --cov-report term-missing
 after_success:
-    - coveralls
+  - coveralls
